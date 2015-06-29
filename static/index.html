@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="mqttws31.js" charset="utf-8"></script>
+	<link href='http://fonts.googleapis.com/css?family=Roboto&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+	<style type="text/css">
+	svg{
+		display: block;
+		margin: 0 auto;
+		/*margin-top: 100px;*/
+	}
+	p{
+		display: block;
+		margin: 0 auto;
+		text-align: center;
+		/*margin-left: -90px;*/
+		margin-top: 50px;
+		margin-bottom: 50px;
+		font-size: 20;
+		font-family: 'Roboto', sans-serif;
+	}
+	</style>
+</head>
+<body>
+<p> Intel IOT hackatone #intelmaker </p>
+	<svg width="720" height="350">
+	<line x1="0" y1="0" x2="720" y2="0" style="stroke:#46779A;stroke-width:2" />
+	<line x1="0" y1="0" x2="0" y2="350" style="stroke:#46779A;stroke-width:2" />
+	<line x1="720" y1="0" x2="720" y2="350" style="stroke:#46779A;stroke-width:2" />
+	<line x1="0" y1="350" x2="720" y2="350" style="stroke:#46779A;stroke-width:2" />
+  	<circle  class="beacon" cx="30" cy="30" r="10"></circle>
+  	<circle  class="beacon" cx="30" cy="330" r="10"></circle>
+  	<circle  class="beacon" cx="690" cy="330" r="10"></circle>
+  	<circle  class="base" cx="300" cy="100" r="10"></circle>
+</svg>
+</body>
+<script type="text/javascript">
+var circle = d3.selectAll(".beacon");
+circle.style("fill","#4FA7E7");
+circle.style("fill-opacity", 0.3);
+circle.data([50, 50, 50]);
+circle.attr("r", function(d) { return d; });
+
+var baseData = [[100,300]];
+var base = d3.selectAll(".base");
+base.style("fill","#F4EC93");
+// base.data(baseData);
+// base.attr("cx", function(d) { console.log(d); return d[0]; });
+// base.attr("cy", function(d) { console.log(d); return d[1]; });
+
+// function rebuildBaseData (x,y) {
+//         baseData[0][0] = x;
+//         baseData[0][1] = y;
+// }
+
+// Create a client instance
+client = new Paho.MQTT.Client("test.mosquitto.org", 8080, "DaDaDaDADA");
+
+// set callback handlers
+client.onConnectionLost = onConnectionLost;
+client.onMessageArrived = onMessageArrived;
+
+// connect the client
+client.connect({onSuccess:onConnect});
+
+
+// called when the client connects
+function onConnect() {
+  // Once a connection has been made, make a subscription and send a message.
+  console.log("onConnect");
+  client.subscribe("hackiot/hackaton/beacon/position");
+}
+
+// called when the client loses its connection
+function onConnectionLost(responseObject) {
+  if (responseObject.errorCode !== 0) {
+    console.log("onConnectionLost:"+responseObject.errorMessage);
+  }
+}
+
+// called when a message arrives
+function onMessageArrived(message) {
+  console.log("onMessageArrived:"+message.payloadString);
+  dt = JSON.parse(message.payloadString);
+  base.attr("cy", dt["y"]);
+  base.attr("cx", dt["x"]);
+  console.log(dt);
+}
+</script>
+<p>Blue circles - hosted bluethooth stations</p>
+<p>Gold circles - target bluethooth device</p>
+</html>
