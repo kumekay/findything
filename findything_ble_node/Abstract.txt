@@ -1,0 +1,5 @@
+Findything Node is a sample project created for Intel IOT Roadshow hackathon, at 28/06/2015, Saint-Petersburgh.
+Based on Nordic ble_app_hrs_c (Heart Rate Colletor) example.
+
+Documentation can be found offline at: <keil_location>/ARM/Pack/NordicSemiconductor/nRF_Examples/8.1.1/documentation
+Documentation can be found online at: http://developer.nordicsemi.com/nRF51_SDK/doc/
